@@ -1,0 +1,18 @@
+name: FluffyCustomToast
+version: '1.0.0'
+main: dev.fluffyworld.FluffyCustomToast
+api-version: '26.2'
+folia-supported: true
+authors: [ FluffyWorld ]
+softdepend: [ PlaceholderAPI ]
+
+commands:
+  ftoast:
+    description: ส่ง toast ให้ผู้เล่น
+    usage: /ftoast <player> <task|goal|challenge> <item> <message>
+    permission: fluffycustomtoast.use
+
+permissions:
+  fluffycustomtoast.use:
+    description: ใช้คำสั่ง /ftoast
+    default: op
