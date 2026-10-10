@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,8 +93,8 @@ public final class ToastService {
             }
             Component title = LEGACY.deserialize(resolved);
             show(player, frame, icon, title);
-        } catch (RuntimeException exception) {
-            FluffyCustomToast.getInstance().getLogger().warning("ส่ง toast ไม่สำเร็จ: " + exception.getMessage());
+        } catch (Throwable throwable) {
+            FluffyCustomToast.getInstance().getLogger().log(Level.WARNING, "ส่ง toast ไม่สำเร็จ", throwable);
         }
     }
 
@@ -105,7 +106,7 @@ public final class ToastService {
         DisplayInfo display = new DisplayInfo(
                 ItemStackTemplate.fromNonEmptyStack(CraftItemStack.asNMSCopy(icon)),
                 PaperAdventure.asVanilla(title),
-                PaperAdventure.asVanilla(Component.empty()),
+                PaperAdventure.asVanilla(Component.space()),
                 Optional.empty(),
                 frame.type(),
                 true,
@@ -113,33 +114,47 @@ public final class ToastService {
                 true
         );
         AdvancementRequirements requirements = AdvancementRequirements.allOf(List.of("impossible"));
-        Advancement advancement = new Advancement(
-                Optional.of(Identifier.fromNamespaceAndPath("minecraft", "story/root")),
+        AdvancementHolder holder = new AdvancementHolder(id, new Advancement(
+                Optional.empty(),
                 Optional.of(display),
                 AdvancementRewards.EMPTY,
                 Map.of("impossible", new Criterion<>(CriteriaTriggers.IMPOSSIBLE, new ImpossibleTrigger.TriggerInstance())),
                 requirements,
                 false
-        );
-        AdvancementHolder holder = new AdvancementHolder(id, advancement);
+        ));
         AdvancementProgress progress = new AdvancementProgress();
         progress.update(requirements);
-        progress.grantProgress("impossible");
+        if (!progress.grantProgress("impossible") || !progress.isDone()) {
+            throw new IllegalStateException("ให้ความคืบหน้า advancement ไม่สำเร็จ");
+        }
 
+        // ไคลเอนต์โชว์ toast เมื่อ advancement ที่มีอยู่แล้วเพิ่งสำเร็จ
+        // ถอดทิ้งในติ๊กเดียวกันทำให้ toast ถูกยกเลิกก่อนวาด
+        send(player, new ClientboundUpdateAdvancementsPacket(false, List.of(holder), Set.of(), Map.of(), false));
+        FluffyCustomToast.getScheduler().runTaskLater(player, () -> {
+            if (!player.isOnline()) {
+                return;
+            }
+            try {
+                send(player, new ClientboundUpdateAdvancementsPacket(false, List.of(), Set.of(), Map.of(id, progress), true));
+            } catch (Throwable throwable) {
+                FluffyCustomToast.getInstance().getLogger().log(Level.WARNING, "ส่ง toast ไม่สำเร็จ", throwable);
+            }
+        }, 1L);
+        FluffyCustomToast.getScheduler().runTaskLater(player, () -> {
+            if (!player.isOnline()) {
+                return;
+            }
+            try {
+                send(player, new ClientboundUpdateAdvancementsPacket(false, List.of(), Set.of(id), Map.of(), false));
+            } catch (Throwable throwable) {
+                FluffyCustomToast.getInstance().getLogger().log(Level.WARNING, "ถอด toast ไม่สำเร็จ", throwable);
+            }
+        }, 60L);
+    }
+
+    private static void send(Player player, ClientboundUpdateAdvancementsPacket packet) {
         ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
-        serverPlayer.connection.send(new ClientboundUpdateAdvancementsPacket(
-                false,
-                List.of(holder),
-                Set.of(),
-                Map.of(id, progress),
-                true
-        ));
-        serverPlayer.connection.send(new ClientboundUpdateAdvancementsPacket(
-                false,
-                List.of(),
-                Set.of(id),
-                Map.of(),
-                false
-        ));
+        serverPlayer.connection.send(packet);
     }
 }
