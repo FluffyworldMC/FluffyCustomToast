@@ -19,6 +19,7 @@
     </properties>
 
     <build>
+        <finalName>FluffyCustomToast</finalName>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
             <plugin>

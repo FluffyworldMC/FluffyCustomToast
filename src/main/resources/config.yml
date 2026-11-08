@@ -1,0 +1,30 @@
+
+#/ftoast <player> <task|goal|challenge> <item> <message>
+#/ftoast noti <on|off>
+
+# system
+#/ftoast <player> <task|goal|challenge> <item> <message> <system>
+#/ftoast noti <on|off> <system>
+systems:
+  - upgrade
+  - online
+
+messages:
+  no-permission: "&cคุณไม่มีสิทธิ์ใช้คำสั่งนี้"
+  not-player: "&cคำสั่งนี้ใช้ได้เฉพาะผู้เล่น"
+  usage-send: "&cใช้: /ftoast <player> <task|goal|challenge> <item> <message> [system]"
+  usage-noti: "&cใช้: /ftoast noti <on|off> [system]"
+  player-not-found: "&cไม่พบผู้เล่นนี้"
+  invalid-frame: "&cกรอบไม่ถูกต้อง ใช้ task, goal หรือ challenge"
+  invalid-item: "&cไอเทมไม่ถูกต้อง ตัวอย่าง PAPER{CMD:11001} หรือ PAPER:11105"
+  empty-message: "&cกรุณาใส่ข้อความ"
+  unknown-system: "&cไม่พบระบบ toast นี้ ตรวจสอบรายชื่อระบบใน config.yml"
+  invalid-toggle: "&cใช้ on หรือ off เท่านั้น"
+  recipient-disabled: "&eผู้เล่นนี้ปิดการแจ้งเตือนประเภทนี้ไว้"
+  global-on: "&aเปิดการแจ้งเตือนทั้งหมดแล้ว"
+  global-off: "&cปิดการแจ้งเตือนทั้งหมดแล้ว"
+  system-on: "&aเปิดการแจ้งเตือนระบบ &e%system% &aแล้ว"
+  system-off: "&cปิดการแจ้งเตือนระบบ &e%system% &cแล้ว"
+  global-off-note: "&7หมายเหตุ: การแจ้งเตือนทั้งหมดยังปิดอยู่ ใช้ /ftoast noti on เพื่อเปิด"
+  reload-success: "&aโหลด config.yml ใหม่แล้ว (&e%systems%&a ระบบ)"
+  reload-failed: "&cโหลด config.yml ไม่สำเร็จ: &e%error%"

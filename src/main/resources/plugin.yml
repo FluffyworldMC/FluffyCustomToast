@@ -8,11 +8,16 @@ softdepend: [ PlaceholderAPI ]
 
 commands:
   ftoast:
-    description: ส่ง toast ให้ผู้เล่น
-    usage: /ftoast <player> <task|goal|challenge> <item> <message>
-    permission: fluffycustomtoast.use
+    description: ส่ง toast ให้ผู้เล่น, เปิด/ปิดการแจ้งเตือน หรือโหลด config ใหม่
+    usage: /ftoast <player> <task|goal|challenge> <item> <message> [system] | /ftoast noti <on|off> [system] | /ftoast reload
 
 permissions:
   fluffycustomtoast.use:
-    description: ใช้คำสั่ง /ftoast
+    description: ใช้คำสั่ง /ftoast เพื่อส่ง toast
+    default: op
+  fluffycustomtoast.noti:
+    description: ใช้ /ftoast noti เพื่อเปิด/ปิดการแจ้งเตือนของตัวเอง
+    default: true
+  fluffycustomtoast.reload:
+    description: ใช้ /ftoast reload เพื่อโหลด config.yml ใหม่
     default: op

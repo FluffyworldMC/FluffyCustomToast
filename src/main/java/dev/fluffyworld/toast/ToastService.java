@@ -25,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -77,13 +78,20 @@ public final class ToastService {
         return item;
     }
 
-    public static void send(Player player, ToastFrame frame, ItemStack icon, String rawText) {
+    public static boolean send(Player player, ToastFrame frame, ItemStack icon, String rawText, @Nullable String system) {
+        if (!FluffyCustomToast.getPreferences().isEnabled(player.getUniqueId(), system)) {
+            return false;
+        }
         ItemStack snapshot = icon.clone();
-        FluffyCustomToast.getScheduler().runTask(player, () -> deliver(player, frame, snapshot, rawText));
+        FluffyCustomToast.getScheduler().runTask(player, () -> deliver(player, frame, snapshot, rawText, system));
+        return true;
     }
 
-    private static void deliver(Player player, ToastFrame frame, ItemStack icon, String rawText) {
+    private static void deliver(Player player, ToastFrame frame, ItemStack icon, String rawText, @Nullable String system) {
         if (!player.isOnline()) {
+            return;
+        }
+        if (!FluffyCustomToast.getPreferences().isEnabled(player.getUniqueId(), system)) {
             return;
         }
         try {
