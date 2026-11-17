@@ -14,6 +14,7 @@ import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.advancements.triggers.Criterion;
 import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.network.protocol.game.ClientboundUpdateAdvancementsPacket;
+import net.minecraft.network.protocol.game.ClientboundUpdateAdvancementsPacket.PositionedAdvancement;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -138,7 +139,8 @@ public final class ToastService {
 
         // ไคลเอนต์โชว์ toast เมื่อ advancement ที่มีอยู่แล้วเพิ่งสำเร็จ
         // ถอดทิ้งในติ๊กเดียวกันทำให้ toast ถูกยกเลิกก่อนวาด
-        send(player, new ClientboundUpdateAdvancementsPacket(false, List.of(holder), Set.of(), Map.of(), false));
+        // 26.3 ย้ายพิกัด x/y ออกจาก DisplayInfo มาอยู่ใน PositionedAdvancement (0,0 คือค่าเริ่มต้นเดิม)
+        send(player, new ClientboundUpdateAdvancementsPacket(false, List.of(new PositionedAdvancement(holder, 0.0F, 0.0F)), Set.of(), Map.of(), false));
         FluffyCustomToast.getScheduler().runTaskLater(player, () -> {
             if (!player.isOnline()) {
                 return;

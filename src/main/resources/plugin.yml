@@ -1,7 +1,7 @@
 name: FluffyCustomToast
 version: '1.0.0'
 main: dev.fluffyworld.FluffyCustomToast
-api-version: '26.2'
+api-version: '26.3'
 folia-supported: true
 authors: [ FluffyWorld ]
 softdepend: [ PlaceholderAPI ]
